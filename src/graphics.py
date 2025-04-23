@@ -66,8 +66,6 @@ class Line:
 
 class Cell:
     def __init__(self, window: Window, top_left = None, bot_right = None) -> None:
-        if isinstance(window, NoneType):
-            raise TypeError('Window is null.')
         self._win = window
 
         self.has_left_wall = None
@@ -85,6 +83,8 @@ class Cell:
     def draw(self) -> None:
         if not self.top_left and not self.bot_right:
             raise Exception('Cell position not defined !')
+        if isinstance(self._win, NoneType):
+            return
         x1, y1 = self.top_left
         x2, y2 = self.bot_right
         top_right = Point(x2, y1)
@@ -111,5 +111,7 @@ class Cell:
         )
 
     def draw_move(self, to_cell, undo=False):
+        if isinstance(self._win, NoneType):
+            return
         color = "gray" if undo else "red"
         self._win.draw_line(Line(self.get_middle(), to_cell.get_middle()), color)
