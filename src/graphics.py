@@ -1,8 +1,5 @@
 from tkinter import Tk, BOTH, Canvas
 from types import NoneType
-from typing import Any, Generator
-
-from black import InvalidInput
 
 
 class Window:
@@ -44,6 +41,9 @@ class Point:
     def __repr__(self) -> str:
         return f"Point(x={self.x}, y={self.y})"
 
+    def __eq__(self, other) -> bool:
+        return self.x == other.x and self.y == other.y
+
 
 class Line:
     def __init__(self, first: Point, second: Point) -> None:
@@ -61,53 +61,51 @@ class Line:
         )
 
     def __repr__(self) -> str:
-        return f"Line({self.first}, {self.second})"
+        return f"Line({repr(self.first)}, {repr(self.second)})"
 
 
 class Cell:
-    def __init__(self, window: Window, top_left = None, bot_right = None) -> None:
+    def __init__(self, window: Window, top_left=None, bot_right=None) -> None:
         self._win = window
+        self.visited = False
 
-        self.has_left_wall = None
-        self.has_right_wall = None
-        self.has_top_wall = None
-        self.has_bottom_wall = None
+        self.has_left_wall = True
+        self.has_right_wall = True
+        self.has_top_wall = True
+        self.has_bottom_wall = True
 
         self.top_left = top_left
         self.bot_right = bot_right
 
-
     def __repr__(self) -> str:
-        return f"Cell(TOP_LEFT={self.top_left}, BOT_RIGHT={self.bot_right}, WALL={self.has_left_wall, self.has_right_wall, self.has_top_wall, self.has_bottom_wall})"
+        return f"Cell(TOP_LEFT={repr(self.top_left)}, BOT_RIGHT={repr(self.bot_right)}, WALL={self.has_left_wall, self.has_right_wall, self.has_top_wall, self.has_bottom_wall})"
 
-    def draw(self) -> None:
-        if not self.top_left and not self.bot_right:
-            raise Exception('Cell position not defined !')
+    def draw(self, x1, y1, x2, y2) -> None:
         if isinstance(self._win, NoneType):
             return
-        x1, y1 = self.top_left
-        x2, y2 = self.bot_right
+        self.top_left = Point(x1, y1)
+        self.bot_right = Point(x2, y2)
         top_right = Point(x2, y1)
         bot_left = Point(x1, y2)
 
-        if self.has_top_wall:
-            wall = Line(self.top_left, top_right)
-            self._win.draw_line(wall, "black")
-        if self.has_right_wall:
-            wall = Line(top_right, self.bot_right)
-            self._win.draw_line(wall, "black")
-        if self.has_bottom_wall:
-            wall = Line(bot_left, self.bot_right)
-            self._win.draw_line(wall, "black")
-        if self.has_left_wall:
-            wall = Line(self.top_left, bot_left)
-            self._win.draw_line(wall, "black")
+        wall = Line(self.top_left, top_right)
+        self._win.draw_line(wall, "black" if self.has_top_wall else "white")
+
+        wall = Line(top_right, self.bot_right)
+        self._win.draw_line(wall, "black" if self.has_right_wall else "white")
+
+        wall = Line(bot_left, self.bot_right)
+        self._win.draw_line(wall, "black" if self.has_bottom_wall else "white")
+
+        wall = Line(self.top_left, bot_left)
+        self._win.draw_line(wall, "black" if self.has_left_wall else "white")
 
     def get_middle(self):
         if not self.top_left and not self.bot_right:
-            raise Exception('Cell position not defined !')
+            raise Exception("Cell position not defined !")
         return Point(
-            (self.top_left.x + self.bot_right.x) / 2, (self.top_left.y + self.bot_right.y) / 2
+            (self.top_left.x + self.bot_right.x) / 2,
+            (self.top_left.y + self.bot_right.y) / 2,
         )
 
     def draw_move(self, to_cell, undo=False):
