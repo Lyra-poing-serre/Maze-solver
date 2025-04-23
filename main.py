@@ -18,6 +18,13 @@ def main():
         left_wall=False
     )
     mid.draw()
+    rdm = Cell(
+        win,
+        Point(width * 1 / 8, height * 1 / 8),
+        Point(width * 3 / 8, height * 3 / 8)
+    )
+    rdm.draw()
+    mid.draw_move(rdm)
     win.wait_for_close()
 
 

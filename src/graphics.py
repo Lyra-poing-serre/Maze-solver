@@ -61,6 +61,7 @@ class Line:
         return f"Line({self.first}, {self.second})"
 
 
+
 class Cell:
     def __init__(
         self,
@@ -80,6 +81,10 @@ class Cell:
 
         self.top_left = top_left
         self.bot_right = bot_right
+        self.middle = Point(
+            (top_left.x + bot_right.x) / 2,
+            (top_left.y + bot_right.y) / 2
+        )
         self._win = window
 
     def __repr__(self) -> str:
@@ -103,3 +108,7 @@ class Cell:
         if self.has_left_wall:
             wall = Line(self.top_left, bot_left)
             self._win.draw_line(wall, "black")
+
+    def draw_move(self, to_cell, undo=False):
+        color = 'gray' if undo else 'red'
+        self._win.draw_line(Line(self.middle, to_cell.middle), color)
