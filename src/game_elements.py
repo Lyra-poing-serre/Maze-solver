@@ -1,7 +1,40 @@
 import time
 import random
-
+from enum import Enum
 from src.graphics import Cell, Point
+
+
+class Direction(Enum):
+    left = "LEFT"
+    right = "RIGHT"
+    up = "UP"
+    bot = "BOT"
+
+
+def can_move(current, other, direction):
+    if other.visited:
+        return False
+    match direction:
+        case Direction.up:
+            return (
+                not current.has_top_wall
+                and not other.has_bottom_wall
+            )
+        case Direction.bot:
+            return (
+                not current.has_bottom_wall
+                and not other.has_top_wall
+            )
+        case Direction.right:
+            return (
+                not current.has_right_wall
+                and not other.has_left_wall
+            )
+        case Direction.left:
+            return (
+                not current.has_left_wall
+                and not other.has_right_wall
+            )
 
 
 class Maze:
@@ -61,13 +94,13 @@ class Maze:
         while True:
             to_visit = []
 
-            if y > 0 and not self._cells[y - 1][x].visited:
+            if y > 0 and not self._cells[y - 1][x].visited:  # left
                 to_visit.append((y - 1, x))
-            if y < self.num_cols - 1 and not self._cells[y + 1][x].visited:
+            if y < self.num_cols - 1 and not self._cells[y + 1][x].visited:  # right
                 to_visit.append((y + 1, x))
-            if x > 0 and not self._cells[y][x - 1].visited:
+            if x > 0 and not self._cells[y][x - 1].visited:  # bot
                 to_visit.append((y, x - 1))
-            if x < self.num_rows - 1 and not self._cells[y][x + 1].visited:
+            if x < self.num_rows - 1 and not self._cells[y][x + 1].visited:  # up
                 to_visit.append((y, x + 1))
 
             if len(to_visit) == 0:
@@ -94,7 +127,45 @@ class Maze:
         for y in range(self.num_cols):
             for x in range(self.num_rows):
                 self._cells[y][x].visited = False
-                print(self._cells[y][x])
 
-    def _solve_r(self):
-        pass
+    def solve(self):
+        res =  self._solve_r(0, 0)
+        print("Maze solved !" if res else'Failed captain !')
+
+        return res
+
+    def _solve_r(self, y, x):
+        self._animate()
+        self._cells[y][x].visited = True
+        if self._cells[y][x] == self._cells[self.num_cols - 1][self.num_rows - 1]:
+            return True
+
+        if y > 0 and can_move(self._cells[y][x], self._cells[y - 1][x], Direction.left):
+            self._cells[y][x].draw_move(self._cells[y - 1][x])
+            res = self._solve_r(y - 1, x)
+            if res:
+                return True
+            self._cells[y][x].draw_move(self._cells[y - 1][x], undo=True)
+
+        if y < self.num_cols - 1 and can_move(self._cells[y][x], self._cells[y + 1][x], Direction.right):
+            self._cells[y][x].draw_move(self._cells[y + 1][x])
+            res = self._solve_r(y + 1, x)
+            if res:
+                return True
+            self._cells[y][x].draw_move(self._cells[y + 1][x], undo=True)
+
+        if x > 0 and can_move(self._cells[y][x], self._cells[y][x - 1], Direction.up):
+            self._cells[y][x].draw_move(self._cells[y][x - 1])
+            res = self._solve_r(y, x - 1)
+            if res:
+                return True
+            self._cells[y][x].draw_move(self._cells[y][x - 1], undo=True)
+
+        if x < self.num_rows - 1 and can_move(self._cells[y][x], self._cells[y][x + 1], Direction.bot):
+            self._cells[y][x].draw_move(self._cells[y][x + 1])
+            res = self._solve_r(y, x + 1)
+            if res:
+                return True
+            self._cells[y][x].draw_move(self._cells[y][x + 1], undo=True)
+
+        return False

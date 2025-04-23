@@ -80,6 +80,9 @@ class Cell:
     def __repr__(self) -> str:
         return f"Cell(VISITED={self.visited}, TOP_LEFT={repr(self.top_left)}, BOT_RIGHT={repr(self.bot_right)}, WALL={self.has_left_wall, self.has_right_wall, self.has_top_wall, self.has_bottom_wall})"
 
+    def __eq__(self, other):
+        return self.top_left == other.top_left and self.bot_right == other.bot_right
+
     def draw(self, x1, y1, x2, y2) -> None:
         if isinstance(self._win, NoneType):
             return
@@ -111,5 +114,5 @@ class Cell:
     def draw_move(self, to_cell, undo=False):
         if isinstance(self._win, NoneType):
             return
-        color = "gray" if undo else "red"
+        color = "violet" if undo else "red"
         self._win.draw_line(Line(self.get_middle(), to_cell.get_middle()), color)
