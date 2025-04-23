@@ -14,8 +14,6 @@ def main():
         win,
         Point(width * 5/8, height * 5/8),
         Point(width * 7/8, height * 7/8),
-        top_wall=False,
-        left_wall=False
     )
     mid.draw()
     rdm = Cell(
@@ -29,4 +27,7 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    #main()
+    width, height = 1920, 1080
+    win = Window(width, height)
+    print([Cell(win)] * 10)

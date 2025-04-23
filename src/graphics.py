@@ -1,5 +1,8 @@
 from tkinter import Tk, BOTH, Canvas
+from types import NoneType
 from typing import Any, Generator
+
+from black import InvalidInput
 
 
 class Window:
@@ -61,36 +64,27 @@ class Line:
         return f"Line({self.first}, {self.second})"
 
 
-
 class Cell:
-    def __init__(
-        self,
-        window: Window,
-        top_left: Point,
-        bot_right: Point,
-        *,
-        left_wall: bool = True,
-        right_wall: bool = True,
-        top_wall: bool = True,
-        bot_wall: bool = True,
-    ) -> None:
-        self.has_left_wall = left_wall
-        self.has_right_wall = right_wall
-        self.has_top_wall = top_wall
-        self.has_bottom_wall = bot_wall
+    def __init__(self, window: Window, top_left = None, bot_right = None) -> None:
+        if isinstance(window, NoneType):
+            raise TypeError('Window is null.')
+        self._win = window
+
+        self.has_left_wall = None
+        self.has_right_wall = None
+        self.has_top_wall = None
+        self.has_bottom_wall = None
 
         self.top_left = top_left
         self.bot_right = bot_right
-        self.middle = Point(
-            (top_left.x + bot_right.x) / 2,
-            (top_left.y + bot_right.y) / 2
-        )
-        self._win = window
+
 
     def __repr__(self) -> str:
         return f"Cell(TOP_LEFT={self.top_left}, BOT_RIGHT={self.bot_right}, WALL={self.has_left_wall, self.has_right_wall, self.has_top_wall, self.has_bottom_wall})"
 
     def draw(self) -> None:
+        if not self.top_left and not self.bot_right:
+            raise Exception('Cell position not defined !')
         x1, y1 = self.top_left
         x2, y2 = self.bot_right
         top_right = Point(x2, y1)
@@ -109,6 +103,13 @@ class Cell:
             wall = Line(self.top_left, bot_left)
             self._win.draw_line(wall, "black")
 
+    def get_middle(self):
+        if not self.top_left and not self.bot_right:
+            raise Exception('Cell position not defined !')
+        return Point(
+            (self.top_left.x + self.bot_right.x) / 2, (self.top_left.y + self.bot_right.y) / 2
+        )
+
     def draw_move(self, to_cell, undo=False):
-        color = 'gray' if undo else 'red'
-        self._win.draw_line(Line(self.middle, to_cell.middle), color)
+        color = "gray" if undo else "red"
+        self._win.draw_line(Line(self.get_middle(), to_cell.get_middle()), color)
