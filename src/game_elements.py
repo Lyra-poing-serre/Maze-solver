@@ -5,7 +5,9 @@ from src.graphics import Cell, Point
 
 
 class Maze:
-    def __init__(self, x1, y1, num_rows, num_cols, cell_size_x, cell_size_y, win=None, seed=None):
+    def __init__(
+        self, x1, y1, num_rows, num_cols, cell_size_x, cell_size_y, win=None, seed=None
+    ):
         if seed:
             random.seed(seed)
         self.x1 = x1
@@ -20,7 +22,7 @@ class Maze:
         self._create_cells()
         self._break_entrance_and_exit()
         self._break_walls_r(0, 0)
-
+        self._reset_cells_visited()
 
     def _create_cells(self):
         for i in range(self.num_cols):
@@ -50,10 +52,9 @@ class Maze:
 
     def _break_entrance_and_exit(self):
         self._cells[0][0].has_top_wall = False
-        self._draw_cell(0,0)
+        self._draw_cell(0, 0)
         self._cells[self.num_cols - 1][self.num_rows - 1].has_bottom_wall = False
         self._draw_cell(self.num_cols - 1, self.num_rows - 1)
-
 
     def _break_walls_r(self, y, x):
         self._cells[y][x].visited = True
@@ -88,3 +89,12 @@ class Maze:
                 self._cells[y - 1][x].has_right_wall = False
 
             self._break_walls_r(selected_y, selected_x)
+
+    def _reset_cells_visited(self):
+        for y in range(self.num_cols):
+            for x in range(self.num_rows):
+                self._cells[y][x].visited = False
+                print(self._cells[y][x])
+
+    def _solve_r(self):
+        pass
