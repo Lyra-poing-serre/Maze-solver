@@ -7,7 +7,7 @@ class Window:
         self.root = Tk()
         self.root.title = "pyMaze"
         self.root.maxsize(width, height)
-        self.canvas = Canvas(self.root, height=height, width=width)
+        self.canvas = Canvas(self.root, bg="white", height=height, width=width)
         self.canvas.pack(fill=BOTH, expand=1)
         self.running = False
 
@@ -25,7 +25,7 @@ class Window:
     def close(self) -> None:
         self.running = False
 
-    def draw_line(self, line, fill_color: str) -> None:
+    def draw_line(self, line, fill_color: str ="black") -> None:
         line.draw(self.canvas, fill_color)
 
 
@@ -50,7 +50,7 @@ class Line:
         self.first = first
         self.second = second
 
-    def draw(self, canvas: Canvas, fill_color: str) -> None:
+    def draw(self, canvas: Canvas, fill_color: str = "black") -> None:
         canvas.create_line(
             self.first.x,
             self.first.y,

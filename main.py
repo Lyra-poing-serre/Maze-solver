@@ -3,10 +3,18 @@ from src.game_elements import Maze
 
 
 def main():
-    width, height = 1920, 1080
-    maze = Maze(30, 30, 10, 5, (width/2-30)/10, (height/2-30)/5, Window(width, height))
-    maze._win.wait_for_close()
+    num_rows = 6
+    num_cols = 8
+    margin = 50
+    screen_x = 800
+    screen_y = 600
+    cell_size_x = (screen_x - 2 * margin) / num_cols
+    cell_size_y = (screen_y - 2 * margin) / num_rows
+    win = Window(screen_x, screen_y)
 
+    maze = Maze(margin, margin, num_rows, num_cols, cell_size_x, cell_size_y, win, 10)
+
+    win.wait_for_close()
 
 if __name__ == "__main__":
     main()
