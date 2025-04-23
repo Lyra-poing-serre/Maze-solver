@@ -78,7 +78,7 @@ class Cell:
         self.bot_right = bot_right
 
     def __repr__(self) -> str:
-        return f"Cell(TOP_LEFT={repr(self.top_left)}, BOT_RIGHT={repr(self.bot_right)}, WALL={self.has_left_wall, self.has_right_wall, self.has_top_wall, self.has_bottom_wall})"
+        return f"Cell(VISITED={self.visited}, TOP_LEFT={repr(self.top_left)}, BOT_RIGHT={repr(self.bot_right)}, WALL={self.has_left_wall, self.has_right_wall, self.has_top_wall, self.has_bottom_wall})"
 
     def draw(self, x1, y1, x2, y2) -> None:
         if isinstance(self._win, NoneType):

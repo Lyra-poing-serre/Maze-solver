@@ -19,7 +19,7 @@ class Maze:
 
         self._create_cells()
         self._break_entrance_and_exit()
-        # self._break_walls_r(0, 0)
+        self._break_walls_r(0, 0)
 
 
     def _create_cells(self):
@@ -59,38 +59,32 @@ class Maze:
         self._cells[y][x].visited = True
         while True:
             to_visit = []
+
+            if y > 0 and not self._cells[y - 1][x].visited:
+                to_visit.append((y - 1, x))
+            if y < self.num_cols - 1 and not self._cells[y + 1][x].visited:
+                to_visit.append((y + 1, x))
             if x > 0 and not self._cells[y][x - 1].visited:
                 to_visit.append((y, x - 1))
-            if x < self.num_rows + 1 and not self._cells[y][x + 1].visited:
+            if x < self.num_rows - 1 and not self._cells[y][x + 1].visited:
                 to_visit.append((y, x + 1))
-            if y > 0 and not self._cells[y][x + 1].visited:
-                to_visit.append((y - 1, x))
-            if y < self.num_rows + 1 and not self._cells[y][x + 1].visited:
-                to_visit.append((y + 1, x))
 
             if len(to_visit) == 0:
                 self._draw_cell(y, x)
                 return
-            selected_x, selected_y = random.choice(to_visit)
+            selected_y, selected_x = random.choice(to_visit)
 
-            x1, y1 = self._cells[y][x].top_left
-            x2, y2 = self._cells[y][x].bot_right
-            top_right = Point(x2, y1)
-            bot_left = Point(x1, y2)
-
-            if top_right == self._cells[selected_y][selected_x].bot_right:
-                self._cells[y][x].has_top_wall = False
-                self._cells[selected_y][selected_x].has_bottom_wall = False
-            elif top_right == self._cells[selected_y][selected_x].top_left:
-                self._cells[y][x].has_right_wall = False
-                self._cells[selected_y][selected_x].has_left_wall = False
-            elif bot_left == self._cells[selected_y][selected_x].top_left:
+            if x + 1 == selected_x:
                 self._cells[y][x].has_bottom_wall = False
-                self._cells[selected_y][selected_x].has_top_wall = False
-            elif bot_left == self._cells[selected_y][selected_x].bot_right:
+                self._cells[y][x + 1].has_top_wall = False
+            if y + 1 == selected_y:
+                self._cells[y][x].has_right_wall = False
+                self._cells[y + 1][x].has_left_wall = False
+            if x - 1 == selected_x:
+                self._cells[y][x].has_top_wall = False
+                self._cells[y][x - 1].has_bottom_wall = False
+            if y - 1 == selected_y:
                 self._cells[y][x].has_left_wall = False
-                self._cells[selected_y][selected_x].has_right_wall = False
-            else:
-                raise Exception(f"{self._cells[y][x]} n'est pas à côté de {self._cells[selected_y][selected_x]}")
+                self._cells[y - 1][x].has_right_wall = False
 
             self._break_walls_r(selected_y, selected_x)
